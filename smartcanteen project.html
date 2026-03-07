@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Canteen | Crystal Sky Edition</title>
+    <style>
+        :root {
+            /* Even lighter and more vibrant Sky Blue Palette */
+            --brand: #03a9f4;
+            --navy: #0277bd;
+            --bg: #f0faff; /* Lighter background than before */
+            --white: #ffffff;
+            --success: #2e7d32;
+            --accent: #b3e5fc;
+            --shadow: 0 8px 25px rgba(3, 169, 244, 0.1);
+        }
+
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); margin: 0; padding: 0; color: #333; }
+        
+        /* --- Navigation --- */
+        nav {
+            background: var(--white); padding: 15px 5%; display: flex; 
+            justify-content: space-between; align-items: center;
+            position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border-bottom: 2px solid var(--accent);
+        }
+        .logo { font-size: 1.5rem; font-weight: 800; color: var(--brand); cursor: pointer; display: flex; align-items: center; gap: 8px; }
+        nav ul { list-style: none; display: flex; gap: 25px; margin: 0; }
+        nav a { text-decoration: none; color: #607d8b; font-weight: 600; cursor: pointer; transition: 0.3s; }
+        nav a:hover { color: var(--brand); }
+
+        .container { max-width: 1050px; margin: 30px auto; padding: 0 20px; }
+
+        section {
+            background: var(--white); border-radius: 24px; padding: 40px;
+            margin-bottom: 30px; box-shadow: var(--shadow); display: none;
+            border: 1px solid #e1f5fe;
+        }
+
+        /* --- Home Page --- */
+        #home { display: block; text-align: center; background: linear-gradient(135deg, #ffffff 0%, #e1f5fe 100%); }
+        .hero-title { color: var(--navy); font-size: 2.8rem; margin-bottom: 15px; font-weight: 800; }
+        .hero-sub { color: #546e7a; margin-bottom: 35px; font-size: 1.1rem; }
+        .feature-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; margin: 45px 0; }
+        .feature-card { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.03); border: 1px solid #f0faff; }
+        .feature-card span { font-size: 2rem; display: block; margin-bottom: 15px; }
+        .feature-card h4 { margin: 0 0 10px 0; font-size: 1rem; color: #333; }
+        .feature-card p { margin: 0; color: #607d8b; font-size: 0.92rem; }
+
+        .about-section {
+            text-align: left; margin-top: 10px; padding: 20px 10px;
+            border-top: 1px solid #e1f5fe; font-size: 0.95rem; color: #546e7a;
+        }
+        .about-section strong { color: #333; }
+
+        /* --- Menu Items --- */
+        .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 18px; text-align: left; }
+        .menu-item { 
+            display: flex; justify-content: space-between; align-items: center; 
+            padding: 15px; border: 1.5px solid #f0faff; border-radius: 16px; 
+            background: #fff; transition: 0.3s;
+        }
+        .menu-item:hover { border-color: var(--brand); transform: translateY(-2px); }
+        .price { font-weight: 800; color: var(--brand); font-size: 1.05rem; }
+        
+        .qty-controls { display: flex; align-items: center; gap: 12px; background: #e1f5fe; padding: 6px 12px; border-radius: 25px; }
+        .qty-btn { background: var(--brand); color: white; border: none; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; font-weight: bold; font-size: 1.1rem; }
+        .qty-val { font-weight: 800; min-width: 20px; text-align: center; color: var(--navy); }
+
+        /* --- Status & Badges --- */
+        .status-badge { 
+            background: #fff3cd; color: #856404; padding: 6px 14px; 
+            border-radius: 20px; font-size: 0.85rem; border: 1px solid #ffeeba;
+            font-weight: 600;
+        }
+        .status-ready { background: #d4edda !important; color: #155724 !important; border-color: #c3e6cb !important; }
+
+        /* --- General UI --- */
+        .btn { width: 100%; padding: 16px; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 1.05rem; transition: 0.3s; background: var(--brand); color: white; }
+        .btn:hover { background: var(--navy); box-shadow: 0 4px 12px rgba(2, 119, 189, 0.3); }
+        .btn-success { background: var(--success); }
+        .receipt-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        .receipt-table th { background: #f0faff; padding: 12px; border-radius: 8px; }
+        .receipt-table td { padding: 15px 12px; border-bottom: 1px solid #f0faff; }
+        
+        h2, h3 { color: var(--navy); }
+        .token-display { background: #e1f5fe; color: var(--navy); font-size: 3.2rem; font-weight: 900; padding: 25px; border-radius: 15px; border: 2px solid var(--accent); margin: 20px 0; display: inline-block; }
+    </style>
+</head>
+<body>
+
+<nav>
+    <div class="logo" onclick="showPage('home')">SmartCanteen <span style="color:#ff9800">⚡</span></div>
+    <ul>
+        <li><a onclick="showPage('home')">Home</a></li>
+        <li><a onclick="showPage('menu')">Menu</a></li>
+        <li><a onclick="showPage('cart')">Cart</a></li>
+        <li><a onclick="showPage('queue')">Queue</a></li>
+    </ul>
+</nav>
+
+<div class="container">
+
+    <section id="home">
+        <h1 class="hero-title">Delicious Food, Zero Wait Time</h1>
+        <p class="hero-sub">The official Smart Pre-Order System for your college canteen. Freshness guaranteed.</p>
+        <button class="btn" style="width:auto; padding: 15px 50px;" onclick="showPage('menu')">View Today's Menu</button>
+        
+        <div class="feature-grid">
+            <div class="feature-card"><span>📱</span><h4>Easy Ordering</h4><p>Browse 30+ items and order in seconds.</p></div>
+            <div class="feature-card"><span>💳</span><h4>Digital Payment</h4><p>Secure UPI and card payments integrated.</p></div>
+            <div class="feature-card"><span>🎟️</span><h4>Token System</h4><p>Get a digital token and skip the crowd.</p></div>
+        </div>
+
+        <div class="about-section">
+            <strong>About:</strong> This application is designed to modernize the college dining experience. By allowing students to pre-order, the canteen staff can manage inventory better and reduce the 12:00 PM peak hour rush significantly.
+        </div>
+    </section>
+
+    <section id="menu">
+        <h2>Today's Fresh Menu</h2>
+        <div id="menu-items-container"></div>
+        <button class="btn" onclick="reviewOrder()" style="margin-top:30px">Review Order & Pay</button>
+    </section>
+
+    <section id="confirm">
+        <h2>Order Summary</h2>
+        <table class="receipt-table">
+            <thead><tr><th>Item</th><th>Qty</th><th style="text-align:right">Subtotal</th></tr></thead>
+            <tbody id="confirm-list"></tbody>
+            <tfoot><tr style="font-weight:bold; font-size:1.2rem; color:var(--navy)"><td colspan="2">Grand Total</td><td style="text-align:right" id="confirm-total">₹0</td></tr></tfoot>
+        </table>
+        <button class="btn btn-success" style="margin-top:20px" onclick="showPage('payment')">Proceed to Checkout</button>
+        <button class="btn" style="background:#cfd8dc; color:#546e7a; margin-top:10px" onclick="showPage('menu')">Edit Items</button>
+    </section>
+
+    <section id="payment">
+        <div style="text-align:center">
+            <h2>Payment Gateway</h2>
+            <p>Total Payable: <strong id="payTotal" style="color:var(--brand)">₹0</strong></p>
+            <div style="background:white; padding:20px; display:inline-block; border-radius:20px; border:2px solid var(--accent)">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=CanteenPay&color=03a9f4" alt="QR">
+            </div>
+            <p style="color:#78909c; font-size:0.9rem">Scan to pay using any UPI App</p>
+            <button class="btn btn-success" onclick="completePayment()">I Have Paid - Get Token</button>
+        </div>
+    </section>
+
+    <section id="cart">
+        <div style="text-align:center">
+            <h2>Order Placed!</h2>
+            <div class="token-display" id="receipt-token">ST-000</div>
+            <p>Your order is being prepared in the kitchen.</p>
+            <table class="receipt-table" id="receipt-table-final">
+                <tbody id="receipt-list"></tbody>
+            </table>
+            <button class="btn btn-success" style="margin-top:20px" onclick="showPage('queue')">Track in Queue</button>
+        </div>
+    </section>
+
+    <section id="queue">
+        <h2>Live Kitchen Status</h2>
+        <table width="100%" style="border-collapse: collapse; text-align: left;">
+            <thead style="background: #f0faff;">
+                <tr><th style="padding:15px;">Token</th><th>Items Ordered</th><th>Status</th></tr>
+            </thead>
+            <tbody id="queueList"></tbody>
+        </table>
+    </section>
+
+</div>
+
+<script>
+    const menuData = {
+        "🥞 1. Tiffin Items": [["Idli", 25], ["Vada", 20], ["Plain Dosa", 35], ["Masala Dosa", 45], ["Onion Dosa", 40], ["Rava Dosa", 50], ["Upma", 30], ["Pongal", 35]],
+        "🍛 2. Rice Items": [
+            ["Chicken Biryani", 120], ["Paneer Biryani", 100], ["Zeera Rice", 60], ["Kichidi", 50],
+            ["Lemon Rice", 40], ["Tomato Rice", 40], ["Curd Rice", 35]
+        ],
+        "🥘 3. Meals & Combos": [
+            ["Rice with Chicken Curry", 110], ["Mini Meals", 70], ["Full Meals", 90], ["Chapati Kurma", 50]
+        ],
+        "🍟 4. Snacks & Fast Food": [["Medu Vada (2 pcs)", 30], ["Mirchi Bajji", 25], ["Onion Bajji", 25], ["Samosa", 20], ["Veg Cutlet", 30], ["Chips (Packet)", 20], ["French Fries", 40], ["Veg Maggi", 35], ["Cheese Maggi", 45]],
+        "🥤 5. Beverages": [
+            ["Water Bottle (1L)", 20], ["Filter Coffee", 20], ["Tea", 15], ["Buttermilk", 15]
+        ]
+    };
+
+    let cart = {};
+
+    function initMenu() {
+        const container = document.getElementById('menu-items-container');
+        container.innerHTML = '';
+        for (const [category, items] of Object.entries(menuData)) {
+            let catHtml = `<h3 style="margin-top:30px; color:var(--brand)">${category}</h3><div class="menu-grid">`;
+            items.forEach(item => {
+                const name = item[0];
+                const price = item[1];
+                catHtml += `
+                    <div class="menu-item">
+                        <div><strong>${name}</strong><br><span class="price">₹${price}</span></div>
+                        <div class="qty-controls">
+                            <button class="qty-btn" onclick="changeQty('${name}', ${price}, -1)">-</button>
+                            <span class="qty-val" id="qty-${name.replace(/\s+/g, '')}">0</span>
+                            <button class="qty-btn" onclick="changeQty('${name}', ${price}, 1)">+</button>
+                        </div>
+                    </div>`;
+            });
+            catHtml += `</div>`;
+            container.innerHTML += catHtml;
+        }
+    }
+
+    function changeQty(name, price, delta) {
+        if (!cart[name]) cart[name] = { price: price, qty: 0 };
+        cart[name].qty += delta;
+        if (cart[name].qty < 0) cart[name].qty = 0;
+        document.getElementById(`qty-${name.replace(/\s+/g, '')}`).innerText = cart[name].qty;
+    }
+
+    function showPage(id) {
+        document.querySelectorAll('section').forEach(s => s.style.display = 'none');
+        document.getElementById(id).style.display = 'block';
+        window.scrollTo(0,0);
+    }
+
+    function reviewOrder() {
+        let listHtml = "";
+        let total = 0;
+        let count = 0;
+        for (const [name, data] of Object.entries(cart)) {
+            if (data.qty > 0) {
+                count++;
+                const sub = data.price * data.qty;
+                total += sub;
+                listHtml += `<tr><td>${name}</td><td>${data.qty}</td><td style="text-align:right">₹${sub}</td></tr>`;
+            }
+        }
+        if (count === 0) return alert("Your cart is empty!");
+        document.getElementById('confirm-list').innerHTML = listHtml;
+        document.getElementById('confirm-total').innerText = '₹' + total;
+        document.getElementById('payTotal').innerText = '₹' + total;
+        showPage('confirm');
+    }
+
+    function completePayment() {
+        const rawNum = Math.floor(100 + Math.random() * 899);
+        const tokenId = "ST-" + rawNum;
+        let itemsSummary = [];
+        
+        for (const [name, data] of Object.entries(cart)) {
+            if (data.qty > 0) itemsSummary.push(`${data.qty}x ${name}`);
+        }
+
+        document.getElementById('receipt-token').innerText = tokenId;
+        
+        const statusSpanId = `status-${rawNum}`;
+        const row = document.getElementById('queueList').insertRow(0);
+        row.style.borderBottom = "1px solid #f0faff";
+        row.innerHTML = `<td style="padding:15px;"><strong>${tokenId}</strong></td><td>${itemsSummary.join(', ')}</td><td><span class="status-badge" id="${statusSpanId}">Preparing</span></td>`;
+
+        setTimeout(() => {
+            const badge = document.getElementById(statusSpanId);
+            if (badge) {
+                badge.innerText = "Ready";
+                badge.classList.add('status-ready');
+            }
+        }, 300000); // 5 Minutes
+
+        // Reset
+        cart = {};
+        document.querySelectorAll('.qty-val').forEach(el => el.innerText = "0");
+        showPage('cart');
+    }
+
+    initMenu();
+</script>
+
+</body>
+</html>
