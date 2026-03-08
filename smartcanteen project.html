@@ -38,8 +38,16 @@
             border: 1px solid #e1f5fe;
         }
 
+        /* --- Auth Styles --- */
+        .auth-tabs { display: flex; gap: 20px; margin-bottom: 30px; justify-content: center; }
+        .auth-tab { cursor: pointer; padding: 10px 25px; border-radius: 20px; font-weight: 600; color: #607d8b; transition: 0.3s; }
+        .auth-tab.active { background: var(--brand); color: white; }
+        .form-group { text-align: left; margin-bottom: 15px; max-width: 400px; margin-inline: auto; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: 600; color: var(--navy); }
+        .form-group input { width: 100%; padding: 12px; border: 1px solid var(--accent); border-radius: 8px; box-sizing: border-box; }
+
         /* --- Home Page --- */
-        #home { display: block; text-align: center; background: linear-gradient(135deg, #ffffff 0%, #e1f5fe 100%); }
+        #home { text-align: center; background: linear-gradient(135deg, #ffffff 0%, #e1f5fe 100%); }
         .hero-title { color: var(--navy); font-size: 2.8rem; margin-bottom: 15px; font-weight: 800; }
         .hero-sub { color: #546e7a; margin-bottom: 35px; font-size: 1.1rem; }
         .feature-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; margin: 45px 0; }
@@ -91,8 +99,8 @@
 <body>
 
 <nav>
-    <div class="logo" onclick="showPage('home')">SmartCanteen <span style="color:#ff9800">⚡</span></div>
-    <ul>
+    <div class="logo">SmartCanteen <span style="color:#ff9800">⚡</span></div>
+    <ul id="main-nav" style="display: none;">
         <li><a onclick="showPage('home')">Home</a></li>
         <li><a onclick="showPage('menu')">Menu</a></li>
         <li><a onclick="showPage('cart')">Cart</a></li>
@@ -101,6 +109,30 @@
 </nav>
 
 <div class="container">
+
+    <section id="auth" style="display: block; text-align: center;">
+        <div class="auth-tabs">
+            <div id="tab-login" class="auth-tab active" onclick="toggleAuth('login')">Login</div>
+            <div id="tab-signup" class="auth-tab" onclick="toggleAuth('signup')">Sign Up</div>
+        </div>
+
+        <form id="login-form" onsubmit="handleAuth(event, 'login')">
+            <h2>Welcome Back</h2>
+            <div class="form-group"><label>Name</label><input type="text" id="login-name" required pattern="[A-Za-z\s]+" title="Only alphabets are allowed" placeholder="Enter your name"></div>
+            <div class="form-group"><label>Email ID</label><input type="email" id="login-email" required placeholder="email@college.edu"></div>
+            <div class="form-group"><label>Password</label><input type="password" required minlength="8" placeholder="Min. 8 characters"></div>
+            <button type="submit" class="btn" style="max-width:400px">Login</button>
+        </form>
+
+        <form id="signup-form" style="display: none;" onsubmit="handleAuth(event, 'signup')">
+            <h2>Create Account</h2>
+            <div class="form-group"><label>Full Name</label><input type="text" id="signup-name" required pattern="[A-Za-z\s]+" title="Only alphabets are allowed" placeholder="John Doe"></div>
+            <div class="form-group"><label>Email ID</label><input type="email" id="signup-email" required placeholder="email@college.edu"></div>
+            <div class="form-group"><label>Create Password</label><input type="password" id="signup-pass" required minlength="8" placeholder="Min. 8 characters"></div>
+            <div class="form-group"><label>Confirm Password</label><input type="password" id="signup-confirm" required minlength="8" placeholder="Repeat password"></div>
+            <button type="submit" class="btn" style="max-width:400px">Register & Start Ordering</button>
+        </form>
+    </section>
 
     <section id="home">
         <h1 class="hero-title">Delicious Food, Zero Wait Time</h1>
@@ -149,13 +181,20 @@
 
     <section id="cart">
         <div style="text-align:center">
-            <h2>Order Placed!</h2>
-            <div class="token-display" id="receipt-token">ST-000</div>
-            <p>Your order is being prepared in the kitchen.</p>
-            <table class="receipt-table" id="receipt-table-final">
-                <tbody id="receipt-list"></tbody>
-            </table>
-            <button class="btn btn-success" style="margin-top:20px" onclick="showPage('queue')">Track in Queue</button>
+            <div id="order-placed-content" style="display: none;">
+                <h2>Order Placed!</h2>
+                <div class="token-display" id="receipt-token">ST-000</div>
+                <p>Your order is being prepared in the kitchen.</p>
+                <table class="receipt-table" id="receipt-table-final">
+                    <tbody id="receipt-list"></tbody>
+                </table>
+                <button class="btn btn-success" style="margin-top:20px" onclick="showPage('queue')">Track in Queue</button>
+            </div>
+            <div id="empty-cart-msg">
+                <h2>Your Cart is Empty</h2>
+                <p>You haven't ordered anything yet.</p>
+                <button class="btn" style="width:auto" onclick="showPage('menu')">Go to Menu</button>
+            </div>
         </div>
     </section>
 
@@ -175,19 +214,55 @@
     const menuData = {
         "🥞 1. Tiffin Items": [["Idli", 25], ["Vada", 20], ["Plain Dosa", 35], ["Masala Dosa", 45], ["Onion Dosa", 40], ["Rava Dosa", 50], ["Upma", 30], ["Pongal", 35]],
         "🍛 2. Rice Items": [
-            ["Chicken Biryani", 120], ["Paneer Biryani", 100], ["Zeera Rice", 60], ["Kichidi", 50],
+            ["Chicken Biryani", 120], ["Paneer Biryani", 100], ["Veg Fried Rice", 70], ["Egg Fried Rice", 80], ["Zeera Rice", 60], ["Kichidi", 50],
             ["Lemon Rice", 40], ["Tomato Rice", 40], ["Curd Rice", 35]
         ],
         "🥘 3. Meals & Combos": [
             ["Rice with Chicken Curry", 110], ["Mini Meals", 70], ["Full Meals", 90], ["Chapati Kurma", 50]
         ],
-        "🍟 4. Snacks & Fast Food": [["Medu Vada (2 pcs)", 30], ["Mirchi Bajji", 25], ["Onion Bajji", 25], ["Samosa", 20], ["Veg Cutlet", 30], ["Chips (Packet)", 20], ["French Fries", 40], ["Veg Maggi", 35], ["Cheese Maggi", 45]],
+        "🍟 4. Snacks & Fast Food": [["Veg Sandwich", 40], ["Grilled Sandwich", 50], ["Veg Puff", 25], ["Paneer Puff", 30], ["Egg Puff", 30], ["Medu Vada (2 pcs)", 30], ["Mirchi Bajji", 25], ["Onion Bajji", 25], ["Samosa", 20], ["Veg Cutlet", 30], ["Chips (Packet)", 20], ["French Fries", 40], ["Veg Maggi", 35], ["Cheese Maggi", 45]],
         "🥤 5. Beverages": [
-            ["Water Bottle (1L)", 20], ["Filter Coffee", 20], ["Tea", 15], ["Buttermilk", 15]
+            ["Chocolate Milkshake", 50], ["Soft Drinks (Coke / Sprite / Fanta)", 30], ["Water Bottle (1L)", 20], ["Filter Coffee", 20], ["Tea", 15], ["Buttermilk", 15]
         ]
     };
 
     let cart = {};
+    let registeredUsers = []; 
+
+    function toggleAuth(type) {
+        document.getElementById('login-form').style.display = type === 'login' ? 'block' : 'none';
+        document.getElementById('signup-form').style.display = type === 'signup' ? 'block' : 'none';
+        document.getElementById('tab-login').classList.toggle('active', type === 'login');
+        document.getElementById('tab-signup').classList.toggle('active', type === 'signup');
+    }
+
+    function handleAuth(event, type) {
+        event.preventDefault();
+        
+        if (type === 'signup') {
+            const name = document.getElementById('signup-name').value;
+            const email = document.getElementById('signup-email').value;
+            const p1 = document.getElementById('signup-pass').value;
+            const p2 = document.getElementById('signup-confirm').value;
+
+            if (p1 !== p2) {
+                alert("Passwords do not match!");
+                return;
+            }
+            
+            registeredUsers.push(email);
+            alert("Account created successfully! You can now login.");
+            toggleAuth('login');
+        } else {
+            const email = document.getElementById('login-email').value;
+            if (!registeredUsers.includes(email)) {
+                alert("No account found with this email. Please Sign Up first!");
+                return;
+            }
+            document.getElementById('main-nav').style.display = 'flex';
+            showPage('home');
+        }
+    }
 
     function initMenu() {
         const container = document.getElementById('menu-items-container');
@@ -202,7 +277,7 @@
                         <div><strong>${name}</strong><br><span class="price">₹${price}</span></div>
                         <div class="qty-controls">
                             <button class="qty-btn" onclick="changeQty('${name}', ${price}, -1)">-</button>
-                            <span class="qty-val" id="qty-${name.replace(/\s+/g, '')}">0</span>
+                            <span class="qty-val" id="qty-${name.replace(/\s+/g, '').replace(/[()\/]/g, '')}">0</span>
                             <button class="qty-btn" onclick="changeQty('${name}', ${price}, 1)">+</button>
                         </div>
                     </div>`;
@@ -216,7 +291,8 @@
         if (!cart[name]) cart[name] = { price: price, qty: 0 };
         cart[name].qty += delta;
         if (cart[name].qty < 0) cart[name].qty = 0;
-        document.getElementById(`qty-${name.replace(/\s+/g, '')}`).innerText = cart[name].qty;
+        const safeId = name.replace(/\s+/g, '').replace(/[()\/]/g, '');
+        document.getElementById(`qty-${safeId}`).innerText = cart[name].qty;
     }
 
     function showPage(id) {
@@ -245,16 +321,32 @@
     }
 
     function completePayment() {
-        const rawNum = Math.floor(100 + Math.random() * 899);
-        const tokenId = "ST-" + rawNum;
         let itemsSummary = [];
+        let finalItemsHtml = "";
+        let hasItems = false;
         
         for (const [name, data] of Object.entries(cart)) {
-            if (data.qty > 0) itemsSummary.push(`${data.qty}x ${name}`);
+            if (data.qty > 0) {
+                hasItems = true;
+                itemsSummary.push(`${data.qty}x ${name}`);
+                finalItemsHtml += `<tr><td>${name}</td><td>${data.qty}</td></tr>`;
+            }
         }
 
+        if (!hasItems) {
+            alert("No items selected to order!");
+            return;
+        }
+
+        const rawNum = Math.floor(100 + Math.random() * 899);
+        const tokenId = "ST-" + rawNum;
+
+        // Populate Receipt Page
         document.getElementById('receipt-token').innerText = tokenId;
-        
+        document.getElementById('receipt-list').innerHTML = finalItemsHtml;
+        document.getElementById('order-placed-content').style.display = 'block';
+        document.getElementById('empty-cart-msg').style.display = 'none';
+
         const statusSpanId = `status-${rawNum}`;
         const row = document.getElementById('queueList').insertRow(0);
         row.style.borderBottom = "1px solid #f0faff";
@@ -266,9 +358,9 @@
                 badge.innerText = "Ready";
                 badge.classList.add('status-ready');
             }
-        }, 300000); // 5 Minutes
+        }, 300000); 
 
-        // Reset
+        // Clear Cart data
         cart = {};
         document.querySelectorAll('.qty-val').forEach(el => el.innerText = "0");
         showPage('cart');
